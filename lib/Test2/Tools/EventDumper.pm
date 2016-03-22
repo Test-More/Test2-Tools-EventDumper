@@ -451,7 +451,7 @@ arrayref, or to undef to clear the defaults.
 
 defaults:
 
-    exclude_fields => {buffered => 1, nested => 1}
+    exclude_fields => [qw/buffered nested/]
 
 =item indent_sequence => '    '
 
