@@ -60,8 +60,9 @@ sub dump_event {
 
     if ($settings->{add_line_numbers}) {
         my $line = 1;
-        my $count = length(0 + scalar split /\n/, $out);
+        my $count = length( 0 + map { 1 } split /\n/, $out );
         $out =~ s/^/sprintf("L%0${count}i: ", $line++)/gmse;
+        $out =~ s/^L\d+: $//gms;
     }
 
     return $out;
@@ -86,8 +87,9 @@ sub dump_events {
 
     if ($settings->{add_line_numbers}) {
         my $line = 1;
-        my $count = length(0 + scalar split /\n/, $out);
+        my $count = length( 0 + map { 1 } split /\n/, $out );
         $out =~ s/^/sprintf("L%0${count}i: ", $line++)/gmse;
+        $out =~ s/^L\d+: $//gms;
     }
 
     return $out;
@@ -368,16 +370,16 @@ containing the line number, for example:
     L03:         call 'name' => 'a';
     L04:         call 'pass' => '1';
     L05:         call 'effective_pass' => '1';
-    L06:
+
     L07:         prop file => match qr{\Qt/basic.t\E};
     L08:         prop line => '12';
     L09:     };
-    L00:
-    L01:     event Ok => sub {
+
+    L11:     event Ok => sub {
     L12:         call 'name' => 'b';
     L13:         call 'pass' => '1';
     L14:         call 'effective_pass' => '1';
-    L15:
+
     L16:         prop file => match qr{\Qt/basic.t\E};
     L17:         prop line => '13';
     L18:     };
@@ -386,7 +388,8 @@ containing the line number, for example:
 
 These labels do not change the code in any meaningful way, it will still run in
 C<eval> and it will still produce the same result. These labels can be useful
-during debugging.
+during debugging. Labels will not be added to otherwise empty lines as such
+labels break on perls older than 5.14.
 
 =item call_when_can => 1
 

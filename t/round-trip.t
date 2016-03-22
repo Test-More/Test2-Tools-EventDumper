@@ -70,7 +70,7 @@ for my $set (@sets) {
         my $err = $@;
         fail;
         my $line = 1;
-        my $count = length(0 + scalar split /\n/, $dump);
+        my $count = length( 0 + map { 1 } split /\n/, $dump );
         $dump =~ s/^/sprintf("%0${count}i: ", $line++)/gmse;
         diag $dump;
         warn $err;
@@ -92,7 +92,7 @@ for my $set (@sets) {
         my $err = $@;
         fail;
         my $line = 1;
-        my $count = length(0 + scalar split /\n/, $dump);
+        my $count = length( 0 + map { 1 } split /\n/, $dump );
         $dump =~ s/^/sprintf("%0${count}i: ", $line++)/gmse;
         diag $dump;
         warn $err;

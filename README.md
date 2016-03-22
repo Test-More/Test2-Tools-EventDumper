@@ -126,16 +126,16 @@ All settings are listed with their default values when possible.
         L03:         call 'name' => 'a';
         L04:         call 'pass' => '1';
         L05:         call 'effective_pass' => '1';
-        L06:
+
         L07:         prop file => match qr{\Qt/basic.t\E};
         L08:         prop line => '12';
         L09:     };
-        L00:
-        L01:     event Ok => sub {
+
+        L11:     event Ok => sub {
         L12:         call 'name' => 'b';
         L13:         call 'pass' => '1';
         L14:         call 'effective_pass' => '1';
-        L15:
+
         L16:         prop file => match qr{\Qt/basic.t\E};
         L17:         prop line => '13';
         L18:     };
@@ -144,7 +144,8 @@ All settings are listed with their default values when possible.
 
     These labels do not change the code in any meaningful way, it will still run in
     `eval` and it will still produce the same result. These labels can be useful
-    during debugging.
+    during debugging. Labels will not be added to otherwise empty lines as such
+    labels break on perls older than 5.14.
 
 - call\_when\_can => 1
 
