@@ -483,8 +483,8 @@ The default is probably adequate for most use cases.
 
 =head1 SOURCE
 
-The source code repository for Test2-AsyncSubtest can be found at
-F<http://github.com/Test-More/Test2-AsyncSubtest/>.
+The source code repository for Test2-Tools-EventDumper can be found at
+F<http://github.com/Test-More/Test2-Tools-EventDumper/>.
 
 =head1 MAINTAINERS
 
