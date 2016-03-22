@@ -479,6 +479,8 @@ C<match()> check with the '\Q' and '\E' quoting construct to make it safer.
 
 The default is probably adequate for most use cases.
 
+=back
+
 =head1 SOURCE
 
 The source code repository for Test2-AsyncSubtest can be found at
