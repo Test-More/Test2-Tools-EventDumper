@@ -193,7 +193,7 @@ SETTINGS
 
         defaults:
 
-            exclude_fields => {buffered => 1, nested => 1}
+            exclude_fields => [qw/buffered nested/]
 
     indent_sequence => ' '
         How to indent each level. Normally 4 spaces are used. You can set
@@ -221,8 +221,8 @@ SETTINGS
         The default is probably adequate for most use cases.
 
 SOURCE
-    The source code repository for Test2-AsyncSubtest can be found at
-    http://github.com/Test-More/Test2-AsyncSubtest/.
+    The source code repository for Test2-Tools-EventDumper can be found at
+    http://github.com/Test-More/Test2-Tools-EventDumper/.
 
 MAINTAINERS
     Chad Granum <exodist@cpan.org>

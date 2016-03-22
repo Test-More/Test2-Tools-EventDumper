@@ -209,7 +209,7 @@ All settings are listed with their default values when possible.
 
     defaults:
 
-        exclude_fields => {buffered => 1, nested => 1}
+        exclude_fields => [qw/buffered nested/]
 
 - indent\_sequence => '    '
 
@@ -239,8 +239,8 @@ All settings are listed with their default values when possible.
 
 # SOURCE
 
-The source code repository for Test2-AsyncSubtest can be found at
-`http://github.com/Test-More/Test2-AsyncSubtest/`.
+The source code repository for Test2-Tools-EventDumper can be found at
+`http://github.com/Test-More/Test2-Tools-EventDumper/`.
 
 # MAINTAINERS
 
