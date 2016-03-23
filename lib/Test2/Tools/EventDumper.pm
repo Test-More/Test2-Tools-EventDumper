@@ -2,7 +2,7 @@ package Test2::Tools::EventDumper;
 use strict;
 use warnings;
 
-our $VERSION = '0.000004';
+our $VERSION = '0.000005';
 
 use Carp qw/croak/;
 use Scalar::Util qw/blessed/;
@@ -46,12 +46,14 @@ my %DEFAULTS = (
 
     indent_sequence => '    ',
 
-    adjust_filename => sub {
-        my $file = shift;
-        $file =~ s{^.*[/\\]}{}g;
-        return "match qr{\\Q$file\\E\$}";
-    },
+    adjust_filename => \&adjust_filename,
 );
+
+sub adjust_filename {
+    my $file = shift;
+    $file =~ s{^.*[/\\]}{}g;
+    return "match qr{\\Q$file\\E\$}";
+}
 
 sub dump_event {
     my ($event, %settings) = @_;
@@ -65,16 +67,8 @@ sub dump_event {
     my $settings = keys %settings ? parse_settings(\%settings) : \%DEFAULTS;
 
     my $out = do_event_dump($event, $settings);
-    $out =~ s/\s+$//msg;
 
-    if ($settings->{add_line_numbers}) {
-        my $line = 1;
-        my $count = length( 0 + map { 1 } split /\n/, $out );
-        $out =~ s/^/sprintf("L%0${count}i: ", $line++)/gmse;
-        $out =~ s/^L\d+: $//gms;
-    }
-
-    return $out;
+    return finalize($out, $settings);
 }
 
 sub dump_events {
@@ -86,13 +80,20 @@ sub dump_events {
     croak "dump_events() requires an array reference, Got: $events"
         unless ref($events) eq 'ARRAY';
 
-    croak "dump_events() requires an array reference of Test2::Event (or subclasss) instances, some array elements are not Test2::Event instances."
+    croak "dump_events() requires an array reference of Test2::Event (or subclass) instances, some array elements are not Test2::Event instances"
         if grep { !$_ || !blessed($_) || !$_->isa('Test2::Event') } @$events;
 
     my $settings = keys %settings ? parse_settings(\%settings) : \%DEFAULTS;
 
     my $out = do_array_dump($events, $settings);
-    $out =~ s/\s+$/\n/msg;
+
+    return finalize($out, $settings);
+}
+
+sub finalize {
+    my ($out, $settings) = @_;
+
+    $out =~ s[(\s+)$][join '' => grep { $_ eq "\n" } split //, $1]msge;
 
     if ($settings->{add_line_numbers}) {
         my $line = 1;
@@ -228,7 +229,7 @@ sub quote_str {
     $use_qq = 1 if $val =~ s/\r/\\r/g;
     $use_qq = 1 if $val =~ s/[\b]/\\b/g;
 
-    my @delims = '"', keys %QUOTE_MATCH;
+    my @delims = ('"', grep {$QUOTE_MATCH{$_}} qw<{ ( [ />);
     unshift @delims => "'" unless $use_qq;
     my ($s1) = grep { $val !~ m/\Q$_\E/ } @delims;
 
