@@ -6,9 +6,6 @@ use Test2::API qw/intercept/;
 use Test2::Tools::EventDumper;
 
 my $events = intercept {
-    local $ENV{'HARNESS_IS_VERBOSE'} = '1';
-    local $ENV{'HARNESS_ACTIVE'}     = '1';
-
     ok(1, 'a');
     ok(2, 'b');
 
@@ -19,107 +16,99 @@ my $events = intercept {
         ok(2, 'b');
     };
 
-    note "XXX";
+    note "XX'\"{/[(XX";
 
     diag "YYY";
 };
 
+delete $events->[-2]->{trace};
+
 my $dump = dump_events $events;
-#print "$dump\n";
+note $dump;
 
 is("$dump\n", <<'EOT', "Output matches expectations");
 array {
     event Ok => sub {
-        call 'name' => 'a';
-        call 'pass' => '1';
-        call 'effective_pass' => '1';
+        call name => 'a';
+        call pass => 1;
+        call effective_pass => 1;
 
-        prop file => match qr{\Qt/basic.t\E$};
-        prop line => '12';
+        prop file => match qr{\Qbasic.t\E$};
+        prop line => 9;
     };
 
     event Ok => sub {
-        call 'name' => 'b';
-        call 'pass' => '1';
-        call 'effective_pass' => '1';
+        call name => 'b';
+        call pass => 1;
+        call effective_pass => 1;
 
-        prop file => match qr{\Qt/basic.t\E$};
-        prop line => '13';
+        prop file => match qr{\Qbasic.t\E$};
+        prop line => 10;
     };
 
     event Ok => sub {
-        call 'name' => 'fail';
-        call 'pass' => '0';
-        call 'effective_pass' => '0';
+        call name => 'fail';
+        call pass => 0;
+        call effective_pass => 0;
 
-        prop file => match qr{\Qt/basic.t\E$};
-        prop line => '15';
+        prop file => match qr{\Qbasic.t\E$};
+        prop line => 12;
     };
 
     event Diag => sub {
-        call 'message' => "Failed test 'fail'\nat t/basic.t line 15.\n";
+        call message => match qr{^\n?Failed test};
 
-        prop file => match qr{\Qt/basic.t\E$};
-        prop line => '15';
+        prop file => match qr{\Qbasic.t\E$};
+        prop line => 12;
     };
 
     event Subtest => sub {
-        call 'name' => 'foo';
-        call 'pass' => '1';
-        call 'effective_pass' => '1';
-        call 'buffered' => '1';
+        call name => 'foo';
+        call pass => 1;
+        call effective_pass => 1;
 
-        prop file => match qr{\Qt/basic.t\E$};
-        prop line => '20';
+        prop file => match qr{\Qbasic.t\E$};
+        prop line => 17;
 
         call subevents => array {
             event Ok => sub {
-                call 'name' => 'a';
-                call 'pass' => '1';
-                call 'effective_pass' => '1';
-                call 'nested' => '1';
+                call name => 'a';
+                call pass => 1;
+                call effective_pass => 1;
 
-                prop file => match qr{\Qt/basic.t\E$};
-                prop line => '18';
+                prop file => match qr{\Qbasic.t\E$};
+                prop line => 15;
             };
 
             event Ok => sub {
-                call 'name' => 'b';
-                call 'pass' => '1';
-                call 'effective_pass' => '1';
-                call 'nested' => '1';
+                call name => 'b';
+                call pass => 1;
+                call effective_pass => 1;
 
-                prop file => match qr{\Qt/basic.t\E$};
-                prop line => '19';
+                prop file => match qr{\Qbasic.t\E$};
+                prop line => 16;
             };
 
             event Plan => sub {
-                call 'max' => '2';
-                call 'nested' => '1';
+                call max => 2;
 
-                prop file => match qr{\Qt/basic.t\E$};
-                prop line => '20';
+                prop file => match qr{\Qbasic.t\E$};
+                prop line => 17;
             };
             end();
         };
     };
 
-    event Note => sub {
-        call 'message' => 'XXX';
-
-        prop file => match qr{\Qt/basic.t\E$};
-        prop line => '22';
-    };
+    event Note => {message => 'XX\'"{/[(XX'};
 
     event Diag => sub {
-        call 'message' => 'YYY';
+        call message => 'YYY';
 
-        prop file => match qr{\Qt/basic.t\E$};
-        prop line => '24';
+        prop file => match qr{\Qbasic.t\E$};
+        prop line => 21;
     };
     end();
 }
 EOT
-
 
 done_testing;

@@ -1,3 +1,14 @@
+use strict;
+use warnings;
+use Test2::Bundle::Extended -target => 'Test2::Tools::EventDumper';
+use Test2::API qw/intercept/;
+
+skip_all "Not written";
+
+done_testing;
+
+__END__
+
 package Test2::Tools::EventDumper;
 use strict;
 use warnings;

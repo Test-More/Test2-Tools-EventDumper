@@ -2,8 +2,8 @@ use strict;
 use warnings;
 use Test2::Bundle::Extended;
 use Test2::API qw/intercept/;
-
 use Test2::Tools::EventDumper;
+use Data::Dumper;
 
 my $events = intercept {
     ok(1, 'a');
@@ -16,13 +16,14 @@ my $events = intercept {
         ok(2, 'b');
     };
 
-    note "XXX";
+    note "XX'\"{/[(XX";
 
     diag "YYY";
 };
 
 # To test show_empty's 'undef' rendering
 $events->[1]->{name} = undef;
+delete $events->[-2]->{trace};
 
 ##############################################
 #                                            #
@@ -32,16 +33,18 @@ $events->[1]->{name} = undef;
 ##############################################
 my $NULL = {};
 my %options = (
-    add_line_numbers    => [0, 1],
-    paren_functions     => [0, 1],
-    qualify_functions   => [0, 1],
-    use_full_event_type => [0, 1],
-    show_empty          => [0, 1],
-    call_when_can       => [0, 1],
-    convert_trace       => [0, 1],
+    add_line_numbers     => [0, 1],
+    paren_functions      => [0, 1],
+    qualify_functions    => [0, 1],
+    use_full_event_type  => [0, 1],
+    show_empty           => [0, 1],
+    call_when_can        => [0, 1],
+    convert_trace        => [0, 1],
+    shorten_single_field => [0, 1],
+    clean_fail_messages  => [0, 1],
 
-    include_fields  => [$NULL, { name => 1 }],
-    exclude_fields  => [$NULL, { pass => 1 }],
+    include_fields => [$NULL, {name => 1}],
+    exclude_fields => [$NULL, {pass => 1}],
     adjust_filename => [$NULL, sub { 'T()' }],
 
     indent_sequence => [$NULL, "\t", ''],
@@ -73,14 +76,20 @@ for my $set (@sets) {
         my $count = length( 0 + map { 1 } split /\n/, $dump );
         $dump =~ s/^/sprintf("%0${count}i: ", $line++)/gmse;
         diag $dump;
-        warn $err;
+        local $Data::Dumper::Sortkeys = 1;
+        diag Dumper($set);
+        diag $err;
         next;
     }
 
     is(
         $events,
         $check,
-    ) || diag $dump;
+    ) || do {
+        diag $dump;
+        local $Data::Dumper::Sortkeys = 1;
+        diag Dumper($set);
+    }
 }
 
 # Test dumpting the first event
@@ -95,14 +104,20 @@ for my $set (@sets) {
         my $count = length( 0 + map { 1 } split /\n/, $dump );
         $dump =~ s/^/sprintf("%0${count}i: ", $line++)/gmse;
         diag $dump;
-        warn $err;
+        local $Data::Dumper::Sortkeys = 1;
+        diag Dumper($set);
+        diag $err;
         next;
     }
 
     is(
         $events->[0],
         $check,
-    ) || diag $dump;
+    ) || do {
+        diag $dump;
+        local $Data::Dumper::Sortkeys = 1;
+        diag Dumper($set);
+    };
 }
 
 done_testing;
