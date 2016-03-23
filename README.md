@@ -18,11 +18,6 @@ configuration options available to tweak the output to meet your needs.
     use Test2::Tools::EventDumper;
 
     my $events = intercept {
-        # Some events change depending on the harness (legacy Test::Builder
-        # behavior).
-        local $ENV{'HARNESS_IS_VERBOSE'} = '1';
-        local $ENV{'HARNESS_ACTIVE'}     = '1';
-
         ok(1, 'a');
         ok(2, 'b');
     };
@@ -38,7 +33,7 @@ The above will print this:
             call 'pass' => '1';
             call 'effective_pass' => '1';
 
-            prop file => match qr{\Qt/basic.t\E};
+            prop file => match qr{\Qbasic.t\E};
             prop line => '12';
         };
 
@@ -47,7 +42,7 @@ The above will print this:
             call 'pass' => '1';
             call 'effective_pass' => '1';
 
-            prop file => match qr{\Qt/basic.t\E};
+            prop file => match qr{\Qbasic.t\E};
             prop line => '13';
         };
         end();
@@ -169,6 +164,25 @@ All settings are listed with their default values when possible.
 
     Which is not useful.
 
+- shorten\_single\_field => 1
+
+    When true, events with only 1 field to display will be shortened to look like
+    this:
+
+        event Note => {message => 'XXX'};
+
+    Instead of this:
+
+        event Note => sub {
+            call message => 'XXX';
+        };
+
+- clean\_fail\_messages => 1
+
+    When true, any value that matches the regex `/^Failed test/` will be turned
+    into a `match qr/^Failed test/` check. This is useful for diagnostics messages
+    that are automatically created.
+
 - field\_order => { ... }
 
     This allows you to assign a sort weight to fields (0 is ignored). Lower values
@@ -228,13 +242,13 @@ All settings are listed with their default values when possible.
 
         sub {
             my $file = shift;
-            $file =~ s{^.*[/\\](t|lib)[/\\]}{}g;
+            $file =~ s{^.*[/\\]}{}g;
             return "match qr{\\Q$file\\E}";
         },
 
-    This default strips off most of the path from the filename, stopping after
-    removing '/lib/' or '/t/'. After stripping the filename it puts it into a
-    `match()` check with the '\\Q' and '\\E' quoting construct to make it safer.
+    This default strips off all of the path from the filename. After stripping the
+    filename it puts it into a `match()` check with the '\\Q' and '\\E' quoting
+    construct to make it safer.
 
     The default is probably adequate for most use cases.
 
