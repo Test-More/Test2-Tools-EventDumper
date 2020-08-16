@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+    - Fix for upcomming Test2::API
+    - Deprecate
+
 0.000011  2018-03-06 13:20:14-08:00 America/Los_Angeles
 
     - Accoutn for another new Test-Simple version
